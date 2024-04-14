@@ -1,0 +1,1 @@
+El juego no es de mi propiedad, ell juego fue bajado de otro repositorio perteneciente a rajatdiptabiswas en el siguiente link https://github.com/rajatdiptabiswas/snake-pygame, el uso que le pretendo dar es sumamente academico, con el fin de hacerle una modificación para quie utilice Hilos
