@@ -22,7 +22,7 @@ blue = pygame.Color(0, 0, 255)
 pygame.init()
 
 # Initialize game window
-pygame.display.set_caption('Snake Eater')
+pygame.display.set_caption('Juego de la serpiente')
 game_window = pygame.display.set_mode((frame_size_x, frame_size_y))
 
 # FPS (frames per second) controller
@@ -44,11 +44,12 @@ score = 0
 # Thread variables
 food_thread = None
 food_thread_running = False
+stop_food_thread = threading.Event()
 
 # Game Over
 def game_over():
     my_font = pygame.font.SysFont('times new roman', 90)
-    game_over_surface = my_font.render('YOU DIED', True, red)
+    game_over_surface = my_font.render('Perdedor', True, red)
     game_over_rect = game_over_surface.get_rect()
     game_over_rect.midtop = (frame_size_x/2, frame_size_y/4)
     game_window.fill(black)
@@ -60,7 +61,7 @@ def game_over():
 # Score
 def show_score(choice, color, font, size):
     score_font = pygame.font.SysFont(font, size)
-    score_surface = score_font.render('Score : ' + str(score), True, color)
+    score_surface = score_font.render('Puntaje : ' + str(score), True, color)
     score_rect = score_surface.get_rect()
     if choice == 1:
         score_rect.midtop = (frame_size_x/10, 15)
@@ -71,12 +72,12 @@ def show_score(choice, color, font, size):
 # Restart button
 def show_restart_button():
     font = pygame.font.SysFont('times new roman', 30)
-    restart_text_surface = font.render('Press R to Restart', True, white)
+    restart_text_surface = font.render('Presiona R para reiniciar', True, white)
     restart_text_rect = restart_text_surface.get_rect()
     restart_text_rect.center = (frame_size_x / 2, frame_size_y / 2)
     game_window.blit(restart_text_surface, restart_text_rect)
 
-    quit_text_surface = font.render('Press Q to Quit', True, white)
+    quit_text_surface = font.render('Presiona Q para salir', True, white)
     quit_text_rect = quit_text_surface.get_rect()
     quit_text_rect.center = (frame_size_x / 2, frame_size_y / 2 + 50)
     game_window.blit(quit_text_surface, quit_text_rect)
@@ -84,7 +85,7 @@ def show_restart_button():
 # Spawn food
 def spawn_food():
     global food_pos, food_spawn, last_food_time
-    while True:
+    while not stop_food_thread.is_set():
         if not food_spawn:
             food_pos = [random.randrange(1, (frame_size_x//10)) * 10, random.randrange(1, (frame_size_y//10)) * 10]
             food_spawn = True
@@ -125,8 +126,7 @@ def main():
                 if event.key == pygame.K_r:
                     restart_game()
                 if event.key == pygame.K_q:
-                    pygame.quit()
-                    sys.exit()
+                    stop_game()
 
         if change_to == 'UP' and direction != 'DOWN':
             direction = 'UP'
@@ -182,6 +182,12 @@ def restart_game():
     food_spawn = False
     score = 0
     main()
+
+def stop_game():
+    global stop_food_thread
+    stop_food_thread.set()
+    pygame.quit()
+    sys.exit()
 
 if __name__ == "__main__":
     main()
